@@ -12,7 +12,13 @@
     {
       "name": "myh-plugin",
       "source": "myh-plugin",
-      "description": "MYH's agent plugins",
+      "description": "MYH's agent plugin",
+      "version": "1.0.0"
+    },
+    {
+      "name": "myh-hooks",
+      "source": "myh-hooks",
+      "description": "MYH's agent hooks",
       "version": "1.0.0"
     }
   ]

@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "command",
+        "osx": "if command -v terminal-notifier &>/dev/null; then terminal-notifier -title 'GitHub Copilot' -message 'Response complete' -sound 'Glass' -execute \"open -a 'Visual Studio Code' \\\"$(pwd)\\\"\"; else osascript -e 'display notification \"Response complete\" with title \"GitHub Copilot\" sound name \"Glass\"'; fi",
+        "command": "echo 'Agent response complete'",
+        "timeout": 10
+      }
+    ]
+  }
+}
