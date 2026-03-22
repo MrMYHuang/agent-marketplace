@@ -16,6 +16,8 @@ Run a script against that connection with:
 sql -name "<named-connection>" @/path/to/script.sql
 ```
 
+This is the preferred execution form for the skill. Do not wrap it in a helper script.
+
 ## Script execution
 
 SQLcl accepts a startup script as:
@@ -25,6 +27,31 @@ SQLcl accepts a startup script as:
 ```
 
 For this skill, prefer local `.sql` files and absolute paths.
+
+## Dumping data to a SQL file
+
+When the user asks for a data dump, use a generator script that spools executable SQL into another file.
+
+Core SQLcl commands:
+
+```sql
+spool /path/to/export.sql
+...
+spool off
+```
+
+Recommended SQL*Plus-compatible settings for machine-readable exports:
+
+```sql
+set echo off
+set feedback off
+set heading off
+set pagesize 0
+set trimspool on
+set linesize 32767
+```
+
+Prefer generating `insert` statements for row-data dumps. Use `dbms_metadata.get_ddl` only for schema/object DDL requests.
 
 ## Relevant help excerpt
 

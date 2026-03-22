@@ -1,6 +1,6 @@
 ---
 name: sqlcl
-description: Use SQLcl to connect to Oracle databases through a saved named connection and run generated `.sql` scripts. Use when the user wants to query or modify an Oracle database with the `sql` command, provides or can provide a SQLcl connection name, and expects Codex to translate a natural-language request into a `.sql` file and execute it.
+description: Use SQLcl to connect to Oracle databases through a saved named connection and run generated `.sql` scripts directly with the `sql` command. Use when the user wants to query or modify an Oracle database, provides or can provide a SQLcl connection name, expects Codex to translate a natural-language request into a `.sql` file and execute it, or asks to dump data into an executable SQL export file.
 ---
 
 # SQLcl
@@ -47,22 +47,9 @@ Preferred locations:
 
 Create the parent directory if needed.
 
-### 4. Execute with the helper script
+### 4. Execute directly with `sql`
 
-Use the bundled runner:
-
-```bash
-./scripts/run_sqlcl.sh --connection "<connection-name>" --sql-file /absolute/path/to/script.sql
-```
-
-Run it from the skill directory:
-
-```bash
-cd /Users/myh/Documents/agent-marketplace/myh-plugin/skills/sqlcl
-./scripts/run_sqlcl.sh --connection "<connection-name>" --sql-file /absolute/path/to/script.sql
-```
-
-The runner executes:
+Run the saved file directly:
 
 ```bash
 sql -name "<connection-name>" @/absolute/path/to/script.sql
@@ -75,6 +62,51 @@ After execution:
 - Report the script path you created
 - Summarize the important output or errors
 - If the command failed, keep the `.sql` file and explain the failing statement or connection problem
+
+## Dump Data Workflow
+
+If the user asks to "dump data", do not stop at console output. Generate a SQL export file.
+
+Preferred behavior:
+
+- Run a `.sql` script that uses `spool` to write another `.sql` file
+- Emit executable SQL statements into that export file
+- Prefer `insert` statements for data dumps so the result can be replayed later
+- Use DDL output only when the user explicitly asks for schema or object definitions
+
+For data dumps, the generated export file is the primary artifact.
+
+Typical shape:
+
+```sql
+set echo off
+set feedback off
+set heading off
+set pagesize 0
+set trimspool on
+set linesize 32767
+
+spool /absolute/path/to/export.sql
+select 'insert into employees(employee_id, first_name) values ('
+       || employee_id
+       || ', '''
+       || replace(first_name, '''', '''''')
+       || ''');'
+from employees;
+spool off
+```
+
+Then execute the generator script with:
+
+```bash
+sql -name "<connection-name>" @/absolute/path/to/generate-dump.sql
+```
+
+After execution:
+
+- Report both the generator script path and the exported `.sql` file path
+- Treat the exported `.sql` file as the result of the task
+- If the user asked for schema DDL instead of row data, prefer `dbms_metadata.get_ddl(...)`
 
 ## Output Conventions
 
@@ -113,10 +145,9 @@ fetch first 20 rows only;
 Execution:
 
 ```bash
-cd /Users/myh/Documents/agent-marketplace/myh-plugin/skills/sqlcl
-./scripts/run_sqlcl.sh --connection "hr-dev" --sql-file /absolute/path/to/recent-employees.sql
+sql -name "hr-dev" @/absolute/path/to/recent-employees.sql
 ```
 
 ## References
 
-- Read [references/sqlcl-usage.md](references/sqlcl-usage.md) for the exact SQLcl help text relevant to named connections and `@script.sql` execution.
+- Read [references/sqlcl-usage.md](references/sqlcl-usage.md) for the exact SQLcl help text relevant to named connections, `@script.sql` execution, and spool-based SQL exports.
