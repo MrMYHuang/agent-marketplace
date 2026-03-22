@@ -1,4 +1,4 @@
 interface:
   display_name: "SQLcl"
-  short_description: "Run Oracle SQLcl saved connections"
-  default_prompt: "Use $sqlcl to write a SQL script for my Oracle database, save it to a .sql file, run it with a named SQLcl connection, or dump data into an executable SQL export file."
+  short_description: "Run Oracle SQL with saved connections"
+  default_prompt: "Use $sqlcl to extract an explicit saved SQLcl connection name from my prompt when present, write a SQL script for my Oracle database, save it to a .sql file, run it with that named connection, or dump data into an executable SQL export file."

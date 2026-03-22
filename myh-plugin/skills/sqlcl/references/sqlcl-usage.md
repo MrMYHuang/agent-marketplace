@@ -7,13 +7,13 @@ These are the locally verified SQLcl help patterns this skill depends on.
 Use a saved connection with:
 
 ```bash
-sql -name "<named-connection>"
+sql -S -name "<named-connection>"
 ```
 
 Run a script against that connection with:
 
 ```bash
-sql -name "<named-connection>" @/path/to/script.sql
+sql -S -name "<named-connection>" @/path/to/script.sql
 ```
 
 This is the preferred execution form for the skill. Do not wrap it in a helper script.
@@ -27,10 +27,12 @@ SQLcl accepts a startup script as:
 ```
 
 For this skill, prefer local `.sql` files and absolute paths.
+Append `exit;` as the final statement in every generated `.sql` file so SQLcl exits cleanly after script execution.
 
 ## Dumping data to a SQL file
 
 When the user asks for a data dump, use a generator script that spools executable SQL into another file.
+Ensure both the generator script and the exported `.sql` file end with `exit;`.
 
 Core SQLcl commands:
 
@@ -61,4 +63,4 @@ Verified from `sql -help` on this machine:
 - `-name <named-connection>    Connect to a saved connection. see connmgr for details.`
 - `<start> is: @<URL>|<filename>[.<ext>] [<parameter> ...]`
 
-Use these forms directly rather than inventing alternate wrappers.
+For this skill, invoke SQLcl as `sql -S ...` while preserving the same `-help` syntax and `-name` semantics shown above.

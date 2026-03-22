@@ -1,6 +1,6 @@
 ---
 name: sqlcl
-description: Use SQLcl to connect to Oracle databases through a saved named connection and run generated `.sql` scripts directly with the `sql` command. Use when the user wants to query or modify an Oracle database, provides or can provide a SQLcl connection name, expects Codex to translate a natural-language request into a `.sql` file and execute it, or asks to dump data into an executable SQL export file.
+description: Use SQLcl to connect to Oracle databases through a saved named connection and run generated `.sql` scripts directly with `sql -S`. Use when the user wants to query or modify an Oracle database, includes or can provide a SQLcl saved connection name in the prompt, expects Codex to extract that connection name when explicit, translate a natural-language request into a `.sql` file and execute it, or asks to dump data into an executable SQL export file.
 ---
 
 # SQLcl
@@ -9,17 +9,32 @@ Translate the user's database request into a `.sql` script, save it to disk, and
 
 ## Workflow
 
-### 1. Require a named connection
+### 1. Identify the named connection
 
-Do not guess the connection. Require the user to provide a SQLcl saved connection name.
+Do not guess the connection. Extract a SQLcl saved connection name from the user's prompt when it is explicit; otherwise ask for it.
+
+Treat the connection as explicit when the prompt clearly names it, for example:
+
+- `use connection hr-dev`
+- `run this on fin_prod`
+- `with saved connection "orders-qa"`
+- `using \`analytics\``
+
+Extraction rules:
+
+- Reuse the exact connection token the user supplied, trimming only surrounding quotes or backticks.
+- If the prompt contains exactly one plausible saved connection name tied to words such as `connection`, `saved connection`, `using`, `with`, `on`, or `against`, use it without asking a follow-up question.
+- If there are multiple plausible connection names, stop and ask which one to use.
+- If there is no explicit connection name, stop and ask for one.
+- Never infer a connection from schema names, usernames, hosts, environments, or prior unrelated context.
 
 Use SQLcl's named connection form:
 
 ```bash
-sql -name "<connection-name>" @/path/to/script.sql
+sql -S -name "<connection-name>" @/path/to/script.sql
 ```
 
-If the user has not supplied a connection name, stop and ask for it.
+If the prompt does not contain a single explicit connection name, stop and ask for it.
 
 ### 2. Convert the request into SQL
 
@@ -29,6 +44,7 @@ Default rules:
 
 - Prefer read-only SQL unless the user explicitly asks to change data or schema.
 - Keep the script self-contained.
+- Append `exit;` as the final statement in every generated `.sql` file so SQLcl terminates after execution.
 - Include `set` commands when they improve readable output.
 - End SQL and PL/SQL statements correctly with `;` and `/` where needed.
 - For destructive operations (`delete`, `truncate`, `drop`, `alter`, bulk `update`, grants, revokes), require explicit user intent.
@@ -39,6 +55,8 @@ When the request is ambiguous, inspect the schema first with a read-only query r
 
 Save the generated script as a `.sql` file before execution.
 
+Before saving, ensure the file ends with `exit;`.
+
 Preferred locations:
 
 - User-specified path if provided
@@ -47,12 +65,12 @@ Preferred locations:
 
 Create the parent directory if needed.
 
-### 4. Execute directly with `sql`
+### 4. Execute directly with `sql -S`
 
 Run the saved file directly:
 
 ```bash
-sql -name "<connection-name>" @/absolute/path/to/script.sql
+sql -S -name "<connection-name>" @/absolute/path/to/script.sql
 ```
 
 ### 5. Review the result
@@ -71,6 +89,7 @@ Preferred behavior:
 
 - Run a `.sql` script that uses `spool` to write another `.sql` file
 - Emit executable SQL statements into that export file
+- Append `exit;` to the end of the generator script and to the end of the exported `.sql` file
 - Prefer `insert` statements for data dumps so the result can be replayed later
 - Use DDL output only when the user explicitly asks for schema or object definitions
 
@@ -93,13 +112,15 @@ select 'insert into employees(employee_id, first_name) values ('
        || replace(first_name, '''', '''''')
        || ''');'
 from employees;
+prompt exit;
 spool off
+exit;
 ```
 
 Then execute the generator script with:
 
 ```bash
-sql -name "<connection-name>" @/absolute/path/to/generate-dump.sql
+sql -S -name "<connection-name>" @/absolute/path/to/generate-dump.sql
 ```
 
 After execution:
@@ -140,13 +161,22 @@ select employee_id, first_name, last_name, hire_date
 from employees
 order by hire_date desc
 fetch first 20 rows only;
+exit;
 ```
 
 Execution:
 
 ```bash
-sql -name "hr-dev" @/absolute/path/to/recent-employees.sql
+sql -S -name "hr-dev" @/absolute/path/to/recent-employees.sql
 ```
+
+User request:
+"Run this on orders-qa: dump rows from order_headers into a replayable SQL file."
+
+Interpretation:
+
+- Extract `orders-qa` as the saved connection name from the prompt.
+- Generate a spool-based dump script and execute it with `sql -S -name "orders-qa" ...`.
 
 ## References
 
