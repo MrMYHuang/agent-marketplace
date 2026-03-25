@@ -8,7 +8,7 @@ A curated collection of skills and plugins for AI agents. Extend your agent capa
 
 #### Method 1
 
-<a href="vscode://chat-plugin/add-marketplace?ref=MrMYHuang/agent-marketplace">Click to Install to VS Code</a>
+[Click to Install to VS Code](vscode://chat-plugin/add-marketplace?ref=MrMYHuang/agent-marketplace)
 
 #### Method 2
 
