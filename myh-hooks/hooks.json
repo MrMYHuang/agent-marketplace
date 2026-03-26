@@ -3,7 +3,7 @@
     "Stop": [
       {
         "type": "command",
-        "osx": "input=$(cat); cwd=$(echo \"$input\" | sed -n 's/.*\"cwd\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p'); if command -v terminal-notifier &>/dev/null; then terminal-notifier -title 'GitHub Copilot' -message 'Response complete' -sound 'Glass' -execute \"open -a 'Visual Studio Code' \\\"$cwd\\\"\"; else osascript -e 'display notification \"Response complete\" with title \"GitHub Copilot\" sound name \"Glass\"'; fi",
+        "osx": "${CLAUDE_PLUGIN_DATA}/scripts/on-stop.sh",
         "command": "echo 'Agent response complete'",
         "timeout": 10
       }
