@@ -1,0 +1,25 @@
+{
+  "name": "agent-marketplace",
+  "metadata": {
+    "description": "Collection of Copilot plugins, agents, prompts, and skills",
+    "version": "1.0.0"
+  },
+  "owner": {
+    "name": "Meng-Yuan Huang",
+    "email": "myh@live.com"
+  },
+  "plugins": [
+    {
+      "name": "myh-plugin",
+      "source": "myh-plugin",
+      "description": "MYH's agent plugin",
+      "version": "1.0.1"
+    },
+    {
+      "name": "myh-hooks",
+      "source": "myh-hooks",
+      "description": "MYH's agent hooks",
+      "version": "1.0.0"
+    }
+  ]
+}
