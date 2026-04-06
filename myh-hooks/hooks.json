@@ -3,7 +3,7 @@
     "Stop": [
       {
         "type": "command",
-        "osx": "${CLAUDE_PLUGIN_DATA}/scripts/on-stop.sh",
+        "osx": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
         "command": "echo 'Agent response complete'",
         "timeout": 10
       }
