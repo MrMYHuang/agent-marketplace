@@ -1,5 +1,19 @@
 {
-  "name": "myh-hooks",
-  "description": "myh-hooks",
-  "version": "1.0.0"
+    "name": "myh-hooks",
+    "description": "myh-hooks",
+    "version": "1.0.0",
+    "hooks": {
+        "Stop": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ]
+    }
 }
