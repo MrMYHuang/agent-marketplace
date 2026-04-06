@@ -12,8 +12,7 @@
     {
       "name": "myh-hooks",
       "source": "myh-hooks",
-      "description": "MYH's agent hooks",
-      "version": "1.0.0"
+      "description": "MYH's agent hooks"
     }
   ]
 }
