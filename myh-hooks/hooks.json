@@ -4,7 +4,7 @@
       {
         "type": "command",
         "osx": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
-        "command": "echo 'Agent response complete'",
+        "command": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
         "timeout": 10
       }
     ]
