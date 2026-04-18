@@ -2,10 +2,15 @@
   "hooks": {
     "Stop": [
       {
-        "type": "command",
-        "osx": "${PLUGIN_ROOT}/scripts/on-stop.sh",
-        "command": "${PLUGIN_ROOT}/scripts/on-stop.sh",
-        "timeout": 10
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "osx": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/on-stop.sh",
+            "timeout": 10
+          }
+        ]
       }
     ]
   }
