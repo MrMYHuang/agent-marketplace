@@ -7,6 +7,6 @@
   },
   "skills": "skills/",
   "agents": "agents/",
-  "hooks": "hooks.json",
+  "hooks": "hooks/hooks.json",
   "mcpServers": ".mcp.json"
 }
