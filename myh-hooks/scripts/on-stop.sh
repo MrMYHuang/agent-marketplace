@@ -14,10 +14,10 @@ if command -v terminal-notifier &>/dev/null; then
   # macOS: Use terminal-notifier for better integration
   terminal-notifier \
     -title 'GitHub Copilot' \
-    -message 'Response complete' \
+    -message "Response complete at $(date '+%H:%M:%S')" \
     -sound 'Glass' \
     -execute "open -a 'Visual Studio Code' \"$cwd\""
 else
   # Fallback: Use osascript for native macOS notification
-  osascript -e 'display notification "Response complete" with title "GitHub Copilot" sound name "Glass"'
+  osascript -e "display notification \"Response complete at $(date '+%H:%M:%S')\" with title \"GitHub Copilot\" sound name \"Glass\""
 fi
